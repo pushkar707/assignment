@@ -4,8 +4,8 @@ import multerS3 from "multer-s3";
 
 
 export const s3 = new aws.S3({
-    accessKeyId:'AKIAYYFR7ABM23MBGVNM',
-    secretAccessKey:"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",
+    accessKeyId:'AKIAYYFR7ABM74AACTV3',
+    secretAccessKey:"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",
     region:"ap-south-1",
 })
 

@@ -26,9 +26,8 @@ app.get("/",(req:Request,res:Response) => {
 
 app.post("/posts",upload.single("coverImage"),async (req:any,res:Response) => {
     const {title, desc} = req.body
-    console.log(title, desc);
 
-    const fileName = req.file.originalname + Date.now()    
+    const fileName = Date.now() + req.file.originalname 
 
     const params = {
         Bucket: 'idea-usher-post-images',
@@ -36,8 +35,13 @@ app.post("/posts",upload.single("coverImage"),async (req:any,res:Response) => {
         Body: req.file.buffer,
     };
     
-    s3.upload(params)  
-    // await Post.create({title,desc,imageKey:fileName}) 
+    s3.upload(params, (err:Error, data:any) => {
+        if (err) {
+          console.error(err);
+          return res.json({success:false});
+        }
+      });     
+    await Post.create({title,desc,imageKey:fileName}) 
     res.json({success:true})
 })
 
