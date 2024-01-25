@@ -62,9 +62,10 @@ app.get("/posts",async(req:Request,res:Response) => {
         posts = await Post.find({})
     }
     if(sort === "publishedOn"){
-        posts = posts.sort((a:any, b:any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-    } else if(sort === "desc"){
-        posts = posts.sort((a:any, b:any) => a.desc.length - b.desc.length)
+        // @ts-ignore
+        posts = posts.sort((a:any, b:any) => new Date(a.createdAt) - new Date(b.createdAt))
+    } else if(sort === "length"){
+        posts = posts.sort((a:any, b:any) => b.desc.length - a.desc.length)
     }
     if(pagination == true){
         const {perPage, pageNo}:any = req.query
