@@ -51,35 +51,58 @@ app.post("/posts",upload.single("coverImage"),async (req:any,res:Response) => {
 })
 
 app.get("/posts",async(req:Request,res:Response) => {
-    const {filter,sort,pagination}:any = req.query
+    const {filter,sort,pagination,pageNo,perPage}:any = req.query
     // filter by tags?filter="lifehacks traveladventures"
     let posts:any
+    
     if(filter && filter.length){
         const filterTagsArray = filter.split(" ")
         const regexTags = filterTagsArray.map((tag:string) => new RegExp(tag, 'i'));    
         posts = await Post.find({tags:{$in:regexTags}})
-    }else{
-        posts = await Post.find({})
     }
-    if(sort === "publishedOn"){
+    
+    // }else{
+    //     posts = await Post.find({})
+    // }
+    if(sort === "oldest"){
         // @ts-ignore
-        posts = posts.sort((a:any, b:any) => new Date(a.createdAt) - new Date(b.createdAt))
-    } else if(sort === "length"){
-        posts = posts.sort((a:any, b:any) => b.desc.length - a.desc.length)
-    }
-    if(pagination == true){
-        const {perPage, pageNo}:any = req.query
-        let subPosts:JSON[] = []
-
-        for (let i = 0; i < posts.length; i += (parseInt(perPage))) {
-            const chunk = posts.slice(i, i + parseInt(perPage));
-            subPosts.push(chunk);
-        }
-        posts = subPosts[pageNo+1]
-    }
+        posts = await Post.find({}).sort({createdAt:"asc"}).skip((pageNo-1)*perPage).limit(perPage)
+        // posts = posts.sort((a:any, b:any) => new Date(a.createdAt) - new Date(b.createdAt))
+    }else if(sort === "latest"){
+        // @ts-ignore
+        posts = await Post.find({}).sort({createdAt:"desc"}).skip((pageNo-1)*perPage).limit(perPage)
+        // posts = posts.sort((a:any, b:any) => new Date(a.createdAt) - new Date(b.createdAt))
+    } else if(sort === "lengthiest" || sort === "shortest"){    
+        
+        posts = await Post.aggregate([
+            {
+                $project: {
+                  desc: 1,
+                  title:1,
+                  imageKey:1,
+                  tags:1,
+                  createdAt:1,
+                  length: { $strLenCP: '$desc' }
+                }
+              },
+              {
+                $sort: { length: sort === "shortest" ? 1 : -1 } // 1 for ascending, -1 for descending
+              },
+            {
+              $skip: (parseInt(pageNo)-1)*parseInt(perPage)
+            },
+            {
+              $limit: parseInt(perPage)
+            }
+        ])
+        console.log(posts);        
+        
+    }else{
+        posts = await Post.find({}).skip((pageNo-1)*perPage).limit(perPage)
+    }     
+    
      
-    return res.json({success:true,posts})
-
+    return res.json({success:true,posts:posts?posts:[]})
 })
 
 app.get("/tags",async(req:Request,res:Response) => {
