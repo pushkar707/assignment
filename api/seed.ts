@@ -18,7 +18,11 @@ const addPosts = async () => {
     tags.forEach(tag => tagNames.push(tag.tagName))
 
     for (let i=0; i<40; i++){
-        await Post.create({title,desc, tags:[tagNames[i%5],tagNames[(i%5)+1]],imageKey:"17061785986331319298.jpeg"})
+        const tag1 = tagNames[i%5];
+        const tag2 = tagNames[(i%5)+1]
+        const post = await Post.create({title,desc, tags:[tag1,tag2],imageKey:"17061785986331319298.jpeg"})
+        await Tag.findOneAndUpdate({tagName:tag1},{$push:{posts:post.id}})
+        await Tag.findOneAndUpdate({tagName:tag2},{$push:{posts:post.id}})
     }
     process.exit()
 }

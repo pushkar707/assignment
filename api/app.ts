@@ -96,6 +96,15 @@ app.get("/posts",async(req:Request,res:Response) => {
     return res.json({success:true,posts:posts?posts:[]})
 })
 
+app.get("/posts/:tag",async(req:Request,res:Response) => {
+    const {tag} = req.params
+    const tagDoc = await Tag.findOne({tagName:tag}).populate("posts")
+    
+    return res.json({success:true,posts:tagDoc?.posts})
+})
+
+
+// Return all the available tags
 app.get("/tags",async(req:Request,res:Response) => {
     const tags = await Tag.find({});
     let tagNames:string[] = []
