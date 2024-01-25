@@ -10,10 +10,7 @@ const postSchema = new Schema({
         required:true
     },
     imageKey:String,
-    tags:[{
-        type:Schema.Types.ObjectId,
-        ref:"Tag"
-    }]
+    tags:[String]
 })
 
 const Post = mongoose.model("POST",postSchema);
