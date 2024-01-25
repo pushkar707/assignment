@@ -61,16 +61,15 @@ app.get("/posts",async(req:Request,res:Response) => {
     }
     if(sort === "oldest"){
         // @ts-ignore
-        posts = await Post.find({}).sort({createdAt:"asc"}).skip((pageNo-1)*perPage).limit(perPage)
+        posts = await Post.find({}).sort({createdAt:"asc"}).skip((pageNo-1)*perPage).limit(perPage).select('title createdAt imageKey tags')
     }else if(sort === "latest"){
         // @ts-ignore
-        posts = await Post.find({}).sort({createdAt:"desc"}).skip((pageNo-1)*perPage).limit(perPage)
+        posts = await Post.find({}).sort({createdAt:"desc"}).skip((pageNo-1)*perPage).limit(perPage).select('title createdAt imageKey tags')
     } else if(sort === "lengthiest" || sort === "shortest"){    
         
         posts = await Post.aggregate([
             {
                 $project: {
-                  desc: 1,
                   title:1,
                   imageKey:1,
                   tags:1,
@@ -90,7 +89,7 @@ app.get("/posts",async(req:Request,res:Response) => {
         ])       
         
     }else{
-        posts = await Post.find({}).skip((pageNo-1)*perPage).limit(perPage)
+        posts = await Post.find({}).skip((pageNo-1)*perPage).limit(perPage).select('title createdAt imageKey tags')
     }    
      
     return res.json({success:true,posts:posts?posts:[]})
@@ -98,7 +97,11 @@ app.get("/posts",async(req:Request,res:Response) => {
 
 app.get("/posts/:tag",async(req:Request,res:Response) => {
     const {tag} = req.params
-    const tagDoc = await Tag.findOne({tagName:tag}).populate("posts")
+    const tagDoc = await Tag.findOne({tagName:tag}).populate({
+        path:"posts",
+        select:"title createdAt imageKey tags"
+    })
+    console.log(tagDoc);
     
     return res.json({success:true,posts:tagDoc?.posts})
 })
