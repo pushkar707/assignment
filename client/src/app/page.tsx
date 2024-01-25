@@ -11,6 +11,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [query, setquery] = useState("")
   const [reverse, setreverse] = useState(false)
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     fetchPosts()
@@ -18,13 +19,17 @@ export default function Home() {
 
   const fetchPosts = async() => {
     setLoading(true)
-    const res = await axios.get(process.env.NEXT_PUBLIC_API_DOMAIN + "/posts?pagination=true&perPage=6&pageNo="+JSON.stringify(page)+query)
+    const res = await axios.get(process.env.NEXT_PUBLIC_API_DOMAIN + "/posts?perPage=6&pageNo="+JSON.stringify(page)+query)
     
     if(res.data.success){
-      return setposts(prevPosts => {
-        const copyPrev = [...prevPosts]
-        return [...copyPrev,...res.data.posts]
-      })
+      if(res.data.posts.length){
+        return setposts(prevPosts => {
+          const copyPrev = [...prevPosts]
+          return [...copyPrev,...res.data.posts]
+        })
+      }else{
+        setHasMore(false)
+      }
     }
     setLoading(false)
   }
@@ -32,7 +37,7 @@ export default function Home() {
   const handleScroll = () => {
     const isBottom = window.innerHeight + document.documentElement.scrollTop + 1 >= document.documentElement.offsetHeight;
 
-    if (isBottom && !loading) {
+    if (isBottom && !loading && hasMore) {
       setPage(prevPage => prevPage + 1);
     }
   };
@@ -54,11 +59,6 @@ export default function Home() {
         <div className="mb-5 flex gap-y-4 items-center w-full flex-col-reverse">
           <div className="gap-x-4 flex items-center">
             <p>Sort By: </p>
-            {/* <button onClick={() => fetchPosts("&sort=publishedOn",false)} className="bg-slate-600 text-white px-3 py-2 text-sm">Oldest</button>
-            <button onClick={() => fetchPosts("&sort=publishedOn",true)} className="bg-slate-600 text-white px-3 py-2 text-sm">Latest</button>
-            <button onClick={() => fetchPosts("&sort=length",false)} className="bg-slate-600 text-white px-3 py-2 text-sm">Lenghtiest</button>
-            <button onClick={() => fetchPosts("&sort=length",true)} className="bg-slate-600 text-white px-3 py-2 text-sm">Shortest</button> */}
-
             <button onClick={() => {setPage(1);setposts([]); setquery("&sort=oldest");setreverse(false)}} className="bg-slate-600 text-white px-3 py-2 text-sm">Oldest</button>
             <button onClick={() => {setPage(1);setposts([]); setquery("&sort=latest");setreverse(true)}} className="bg-slate-600 text-white px-3 py-2 text-sm">Latest</button>
             <button onClick={() => {setPage(1);setposts([]); setquery("&sort=lengthiest");setreverse(false)}} className="bg-slate-600 text-white px-3 py-2 text-sm">Lenghtiest</button>
@@ -83,7 +83,7 @@ export default function Home() {
         })}
         </div>
       </div>
-      {loading &&<div className="flex justify-center scale-75">
+      {loading  && hasMore &&<div className="flex justify-center scale-75">
         <Loading/>
       </div>}
     </div>

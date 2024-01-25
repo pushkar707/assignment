@@ -51,8 +51,7 @@ app.post("/posts",upload.single("coverImage"),async (req:any,res:Response) => {
 })
 
 app.get("/posts",async(req:Request,res:Response) => {
-    const {filter,sort,pagination,pageNo,perPage}:any = req.query
-    // filter by tags?filter="lifehacks traveladventures"
+    const {filter,sort,pageNo,perPage}:any = req.query
     let posts:any
     
     if(filter && filter.length){
@@ -60,18 +59,12 @@ app.get("/posts",async(req:Request,res:Response) => {
         const regexTags = filterTagsArray.map((tag:string) => new RegExp(tag, 'i'));    
         posts = await Post.find({tags:{$in:regexTags}})
     }
-    
-    // }else{
-    //     posts = await Post.find({})
-    // }
     if(sort === "oldest"){
         // @ts-ignore
         posts = await Post.find({}).sort({createdAt:"asc"}).skip((pageNo-1)*perPage).limit(perPage)
-        // posts = posts.sort((a:any, b:any) => new Date(a.createdAt) - new Date(b.createdAt))
     }else if(sort === "latest"){
         // @ts-ignore
         posts = await Post.find({}).sort({createdAt:"desc"}).skip((pageNo-1)*perPage).limit(perPage)
-        // posts = posts.sort((a:any, b:any) => new Date(a.createdAt) - new Date(b.createdAt))
     } else if(sort === "lengthiest" || sort === "shortest"){    
         
         posts = await Post.aggregate([
@@ -94,13 +87,11 @@ app.get("/posts",async(req:Request,res:Response) => {
             {
               $limit: parseInt(perPage)
             }
-        ])
-        console.log(posts);        
+        ])       
         
     }else{
         posts = await Post.find({}).skip((pageNo-1)*perPage).limit(perPage)
-    }     
-    
+    }    
      
     return res.json({success:true,posts:posts?posts:[]})
 })
