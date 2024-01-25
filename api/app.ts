@@ -51,8 +51,34 @@ app.post("/posts",upload.single("coverImage"),async (req:any,res:Response) => {
 })
 
 app.get("/posts",async(req:Request,res:Response) => {
-    const {filter,sort,pagination} = req.query
-    const post = await Post.find({})
+    const {filter,sort,pagination}:any = req.query
+    // filter by tags?filter="lifehacks traveladventures"
+    let posts:any
+    if(filter && filter.length){
+        const filterTagsArray = filter.split(" ")
+        const regexTags = filterTagsArray.map((tag:string) => new RegExp(tag, 'i'));    
+        posts = await Post.find({tags:{$in:regexTags}})
+    }else{
+        posts = await Post.find({})
+    }
+    if(sort === "publishedOn"){
+        posts = posts.sort((a:any, b:any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    } else if(sort === "desc"){
+        posts = posts.sort((a:any, b:any) => a.desc.length - b.desc.length)
+    }
+    if(pagination == true){
+        const {perPage, pageNo}:any = req.query
+        let subPosts:JSON[] = []
+
+        for (let i = 0; i < posts.length; i += (parseInt(perPage))) {
+            const chunk = posts.slice(i, i + parseInt(perPage));
+            subPosts.push(chunk);
+        }
+        posts = subPosts[pageNo+1]
+    }
+     
+    return res.json({success:true,posts})
+
 })
 
 app.get("/tags",async(req:Request,res:Response) => {
