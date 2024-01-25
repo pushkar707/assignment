@@ -104,6 +104,16 @@ app.get("/tags",async(req:Request,res:Response) => {
     return res.json({success:true,tags:tagNames})
 })
 
+app.get("/search",async(req:Request,res:Response) => {
+    const {type,searchTerm} = req.query
+
+    const searchQuery = {}
+    // @ts-ignore
+    searchQuery[type == "description" ? "desc" : type] = { $regex: searchTerm, $options: "i" };
+    const posts = await Post.find(searchQuery)
+    res.json({success:true,posts});
+})
+
 app.listen(8000,() => {
     console.log("Listening on port 8000");
 })
