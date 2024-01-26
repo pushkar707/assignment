@@ -3,7 +3,7 @@ import PostCard from '@/app/components/PostCard';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 
-const page = ({params}:{params:any}) => {
+const Page = ({params}:{params:any}) => {
     const {tag} = params;
     const [posts, setposts] = useState<any[]>([])
 
@@ -31,4 +31,4 @@ const page = ({params}:{params:any}) => {
   )
 }
 
-export default page
+export default Page

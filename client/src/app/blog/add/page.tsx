@@ -2,7 +2,7 @@
 import axios from 'axios';
 import React, { FormEvent, useState, useEffect, MouseEvent } from 'react'
 
-const page = () => {
+const Page = () => {
   const [title, setTitle] = useState<string>("")
   const [coverImage, setCoverImage] = useState<null | File>(null)
   const [postContent, setPostContent] = useState("")
@@ -91,4 +91,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
