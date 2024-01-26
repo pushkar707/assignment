@@ -95,13 +95,19 @@ app.get("/posts",async(req:Request,res:Response) => {
     return res.json({success:true,posts:posts?posts:[]})
 })
 
+app.get("/posts/post/:postId",async(req:Request,res:Response) => {
+    const {postId} = req.params
+    const post = await Post.findById(postId)
+    
+    return res.json({success:true,post})
+})
+
 app.get("/posts/:tag",async(req:Request,res:Response) => {
     const {tag} = req.params
     const tagDoc = await Tag.findOne({tagName:tag}).populate({
         path:"posts",
         select:"title createdAt imageKey tags"
     })
-    console.log(tagDoc);
     
     return res.json({success:true,posts:tagDoc?.posts})
 })
