@@ -73,6 +73,7 @@ export default function Home() {
 
   return (
     <div className="p-8">
+      <a href="/blog/add" className="underline text-blue-600 absolute top-5 left-5">Add blog post</a>
       <p className="text-center text-3xl">Blog</p>
 
       <div className="mt-8 px-6 lg:px-16 xl:px-32">
