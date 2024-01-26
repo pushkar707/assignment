@@ -32,7 +32,7 @@ const page = ({params}:any) => {
 
 
         <div className='p-10'>
-          <img src={"https://idea-usher-post-images.s3.ap-south-1.amazonaws.com/"+blogDetails.imageKey} className='block mb-8 mx-auto w-[70&] h-[400px]' />
+          <img src={`https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_BUCKET_REGION}.amazonaws.com/`+blogDetails.imageKey} className='block mb-8 mx-auto w-[70&] h-[400px]' />
           <pre className='whitespace-pre-line'>{blogDetails.desc}</pre>
         </div>
       

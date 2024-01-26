@@ -3,7 +3,7 @@ import React from 'react'
 const PostCard = ({_id,imageKey,title,tags,createdAt}:any) => {
   return (
     <div>
-        <img src={"https://idea-usher-post-images.s3.ap-south-1.amazonaws.com/"+imageKey} className="w-full h-[180px]" />
+        <img src={`https://${process.env.NEXT_PUBLIC_AWS_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_BUCKET_REGION}.amazonaws.com/`+imageKey} className="w-full h-[180px]" />
         <div className="bg-[#0375FF14] p-4">
         <p className="mb-3 font-medium">{title.slice(0,75)}{title.length > 75 ? '....' : ''}</p>
         <p className="mb-2">Tags: {tags.map((tag:string,index:number) => {

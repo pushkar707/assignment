@@ -4,8 +4,9 @@ import {s3, upload} from "./utils/multer"
 import Post from "./models/Post"
 import Tag from "./models/Tag"
 import cors from "cors"
+require('dotenv').config();
 
-mongoose.connect("mongodb://127.0.0.1:27017/ideaUsher")
+mongoose.connect(process.env.MONGO_DB_URI || "")
 .then(() => {
     console.log("Connected to mongoose");
 }).catch((e:Error) => {
@@ -34,7 +35,7 @@ app.post("/posts",upload.single("coverImage"),async (req:any,res:Response) => {
         fileName = Date.now() + req.file.originalname 
 
         const params = {
-            Bucket: 'idea-usher-post-images',
+            Bucket: process.env.AWS_BUCKET_NAME || "",
             Key:fileName,
             Body: req.file.buffer,
         };
