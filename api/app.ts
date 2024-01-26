@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGO_DB_URI || "")
 const app = express();
 
 app.use(cors({
-    origin:"http://localhost:3000"
+    origin:process.env.CLIENT_URL
 }))
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
@@ -47,7 +47,10 @@ app.post("/posts",upload.single("coverImage"),async (req:any,res:Response) => {
             }
         }); 
     }    
-    await Post.create({title,desc,imageKey:fileName,tags}) 
+    const post = await Post.create({title,desc,imageKey:fileName,tags})
+    tags.forEach(async(tag:any) => {
+        await Tag.findOneAndUpdate({tagName:tag},{$push:{posts:post._id}})
+    })
     res.json({success:true})
 })
 
