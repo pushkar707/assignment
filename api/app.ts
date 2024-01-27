@@ -1,4 +1,4 @@
-import express, {Request,Response} from "express"
+import express, {Request,Response, response} from "express"
 import mongoose from "mongoose";
 import {s3, upload} from "./utils/multer"
 import Post from "./models/Post"
@@ -130,10 +130,19 @@ app.get("/search",async(req:Request,res:Response) => {
     const {type,searchTerm} = req.query
 
     const searchQuery = {}
-    // @ts-ignore
-    searchQuery[type == "description" ? "desc" : type] = { $regex: searchTerm, $options: "i" };
-    const posts = await Post.find(searchQuery)
-    res.json({success:true,posts});
+    try{
+        if(searchTerm && searchTerm.length && typeof(searchTerm) == "string"){
+            const escapedSearchTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            // @ts-ignore
+            searchQuery[type == "description" ? "desc" : type] = { $regex: escapedSearchTerm, $options: "i" };
+            const posts = await Post.find(searchQuery)
+            return res.json({success:true,posts});
+        }return res.json({success:false,message:"Searchterm empty"})
+    }catch(e){
+        console.log("Error occured in search");        
+        console.log(e);
+        return res.json({success:false,error:true,errorObj:e})
+    }
 })
 
 app.listen(8000,() => {
