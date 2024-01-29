@@ -140,8 +140,8 @@ app.get("/search",async(req:Request,res:Response) => {
         }return res.json({success:false,message:"Searchterm empty"})
     }catch(e){
         console.log("Error occured in search");        
-        console.log(e);
-        return res.json({success:false,error:true,errorObj:e})
+        console.log(e); 
+        return res.status(500).json({success:false,error:true,errorObj:e})
     }
 })
 

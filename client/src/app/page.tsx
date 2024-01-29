@@ -76,7 +76,7 @@ export default function Home() {
       <a href="/blog/add" className="underline text-blue-600 absolute top-5 left-5">Add blog post</a>
       <p className="text-center text-3xl">Blog</p>
 
-      <div className="mt-8 px-6 lg:px-16 xl:px-32">
+      <div className="mt-8 md:px-6 lg:px-16 xl:px-32">
         <div className="mb-5 flex gap-y-4 items-center w-full flex-col-reverse">
           <div className="gap-x-4 flex items-center">
             <p>Sort By: </p>
@@ -91,7 +91,7 @@ export default function Home() {
           </div>
          
         </div>
-        <div className="grid grid-cols-3 gap-4 lg:gap-x-6">
+        <div className="grid grid-col-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-x-6">
         {posts.map(post => {
           return <PostCard key={post._id} {...post} />
         })}
